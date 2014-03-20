@@ -1,3 +1,7 @@
+html
+{
+  background-color: rgb(0,87,164);
+}
 #game_container
 {
   border-collapse: collapse;
@@ -5,17 +9,28 @@
 
 .cell
 {
-  width: 20px;
-  height: 20px;
-  border: 1px solid grey;
+  width: 10px;
+  height: 10px;
+  /*border: 1px solid grey;*/
+  border-radius: 50%;
+  background-color: rgb(0,87,164);
 }
 
 .live
 {
-  background-color: silver;
+  border: none;
+  background-color: rgb(255,214, 0);
 }
 
 .dead
 {
   background-color: white;
 }
+
+/*
+yellow : rgb(255,214, 0);
+green : rgb(0,148,74);
+blue : rgb(0,87,164);
+red : rgb(238,46,36);
+orange : rgb(244,123,32);
+*/

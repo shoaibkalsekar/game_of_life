@@ -4,6 +4,8 @@ var Game = {
 
   universe : undefined,
 
+  data : {},
+
   initializeUniverse : function($root, x, y){
     // $root is the root html node
     // 'x' is the no. of blocks on x-axis
@@ -67,7 +69,8 @@ var Game = {
   startEvolution : function(interval){
     this.isUniverse();
     // this.generationInterval = setInterval('evolution', 500);
-    window.setInterval(this._evolve.bind(this), interval)
+    this.data.interval = interval;
+    this.timer = window.setInterval(this._evolve.bind(this), interval)
     // function()
   },
 
@@ -160,13 +163,30 @@ var Game = {
   startLife : function($root, x, y){
     this.initializeUniverse($root, x, y);
     this.seedLives($root, 0.5);
+  },
+
+  pauseTimer : function(timer){
+    clearInterval(timer);
+  },
+
+  resume : function(){
+    if(this.data.interval)
+      this.startEvolution(this.data.interval);
   }
 }
 
 
 $(function(){
 
-  $(".cell").click(function(){
+  // debugger;
+  var doc_width = $(window).width(),
+      doc_height = $(window).height();
+
+
+
+  Game.startLife($("#game_container"), Math.floor(doc_width/12), Math.floor(doc_height/12));
+  $(document).on('.cell', 'click', function(){
+    // debugger;
     Game.getLife(this);
   });
 
