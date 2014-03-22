@@ -6,6 +6,8 @@ var Game = {
 
   data : {},
 
+  colors : ['blue', 'green', 'yellow', 'red', 'orange'],
+
   initializeUniverse : function($root, x, y){
     // $root is the root html node
     // 'x' is the no. of blocks on x-axis
@@ -28,7 +30,7 @@ var Game = {
       for(var j = 0; j<x; j++)
       {
         // create columns in each row
-        $new_col += "<td class='cell' data-isAlive='false' id=cell_"+i+"_"+j+"></td>";
+        $new_col += "<td class='cell' data-isAlive='false' data-generation=0 id=cell_"+i+"_"+j+"></td>";
       }
 
       $new_row.append($new_col);
@@ -48,7 +50,7 @@ var Game = {
       {
         $cell = this._getCell(i, j);
         if(Math.random() > chance)
-          this.giveLife($cell);
+          this.giveLife($cell, 0);
       }
   },
 
@@ -56,14 +58,23 @@ var Game = {
     return this.universe.rootNode.find('#cell_'+i+'_'+j);
   },
 
-  giveLife : function($cell){
-    $cell.attr('data-isAlive', 'true');
-    $cell.addClass('live');
+  giveLife : function($cell, generation){
+
+    var cell_gen_count = parseInt($cell.attr('data-generation'),10);
+
+    $cell.attr('data-isAlive', 'true').addClass('live');
+
+    if(cell_gen_count === generation)
+    {
+        $cell.attr('class', 'cell')
+              .addClass('live')
+              .addClass(this.colors[generation%this.colors.length]);
+    }
   },
 
   killCell : function($cell){
-    $cell.attr('data-isAlive', 'false');
-    $cell.removeClass('live');
+    $cell.attr('data-isAlive', 'false')
+        .attr('class', 'cell');
   },
 
   startEvolution : function(interval){
@@ -76,11 +87,17 @@ var Game = {
 
   _evolve : function(){
     this.createNextGeneration();
-    this.renderNextGeneration();
+    this.renderNextGeneration(this.data.generation);
   },
 
   createNextGeneration : function(){
     this.isUniverse();
+
+    if(!this.data.generation)
+      this.data.generation = 1;
+    else
+      this.data.generation += 1; 
+
     var universe = this.universe,
         $cell;
     for(var i=0; i<universe.length; i++)
@@ -97,7 +114,8 @@ var Game = {
         else
         {
           if(this.getNeighbours(i,j).liveCount === 3)
-            $cell.attr('data-isAlive', 'true');
+            $cell.attr('data-isAlive', 'true')
+                  .attr('data-generation', this.data.generation);
         }
       }
   },
@@ -139,7 +157,7 @@ var Game = {
     return $("#cell_"+i+"_"+j).hasClass('live');
   },
 
-  renderNextGeneration : function(){
+  renderNextGeneration : function(gen_count){
     this.isUniverse();
     var universe = this.universe,
         $cell;
@@ -148,7 +166,7 @@ var Game = {
       {
         $cell = $("#cell_"+i+"_"+j);
         if($cell.attr('data-isAlive') === 'true')
-          this.giveLife($cell);
+          this.giveLife($cell, gen_count);
         else
           this.killCell($cell);
       }
@@ -165,8 +183,9 @@ var Game = {
     this.seedLives($root, 0.5);
   },
 
-  pauseTimer : function(timer){
-    clearInterval(timer);
+  pause : function(timer){
+    if(timer)
+      clearInterval(timer);
   },
 
   resume : function(){
@@ -179,8 +198,8 @@ var Game = {
 $(function(){
 
   // debugger;
-  var doc_width = $(window).width(),
-      doc_height = $(window).height();
+  var doc_width = $('.universe').width(),
+      doc_height = $('.universe').height();
 
 
 
@@ -189,5 +208,17 @@ $(function(){
     // debugger;
     Game.getLife(this);
   });
+
+  $('.start').on('click', function(){
+    Game.startEvolution(200);
+  });
+
+  $('.pause').on('click', function(){
+    Game.pause(Game.timer);
+  }); 
+
+  $('.resume').on('click', function(){
+    Game.resume();
+  });   
 
 })
