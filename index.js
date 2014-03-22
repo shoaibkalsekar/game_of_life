@@ -6,6 +6,7 @@ var Game = {
 
   data : {},
 
+  // colors : ['yellow'],
   colors : ['blue', 'green', 'yellow', 'red', 'orange'],
 
   initializeUniverse : function($root, x, y){
@@ -49,7 +50,7 @@ var Game = {
       for(var j=0; j<universe.height; j++)
       {
         $cell = this._getCell(i, j);
-        if(Math.random() > chance)
+        if(Math.random() < chance)
           this.giveLife($cell, 0);
       }
   },
@@ -180,7 +181,7 @@ var Game = {
 
   startLife : function($root, x, y){
     this.initializeUniverse($root, x, y);
-    this.seedLives($root, 0.5);
+    this.seedLives($root, 0.2);
   },
 
   pause : function(timer){
